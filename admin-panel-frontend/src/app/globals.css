@@ -1,0 +1,212 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Color Palette */
+  --default-button-bg: #f5f5f5;
+  --primary-text: #343637;
+  --menu-text: #1C1C1C;
+  --secondary-bg: #F4F9FC;
+  --button-glow: #458BC1;
+  --dark-bg: #003E6E;
+  --dark-button: #002847;
+  --icon-default: #03314B;
+  --icon-active: #0365F2;
+  --menu-active-bg-start: #E8F1FF;
+  --menu-active-bg-end: #F2F7FF;
+  --menu-active-border: #D1E3FF;
+  --menu-hover-bg: #F1F6F4;
+  --menu-hover-border: #E0E9F1;
+  --button-line: #E5E7EB;
+  --button-icon: #1D1D1D;
+  --mobile-text: #333333;
+  --mobile-secondary: #666666;
+  --mobile-hover: #F5F5F5;
+  --mobile-footer: #003E6E;
+  --mobile-active: #4FBAE9;
+  --dashboard-bg: #F8FCFF;
+  --danger-color: #FF4D4F;
+  --success-color: #52C41A;
+  --warning-color: #FAAD14;
+  --info-color: #1890FF;
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--dashboard-bg);
+  color: var(--primary-text);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(-10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes slideIn {
+  from { 
+    transform: translateX(-100%); 
+  }
+  to { 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes zoomIn {
+  from { 
+    transform: scale(0.9); 
+  }
+  to { 
+    transform: scale(1); 
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.2s ease-out;
+}
+
+.animate-zoom-in {
+  animation: zoomIn 0.2s ease-out;
+}
+
+/* Custom utilities */
+.truncate-email {
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom component styles */
+@layer components {
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none transition-colors duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none transition-colors duration-200;
+  }
+
+  .status-active {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .status-pending {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .status-inactive {
+    @apply bg-gray-100 text-gray-600;
+  }
+
+  .status-suspended {
+    @apply bg-red-100 text-red-600;
+  }
+
+  .role-instructor {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .role-student {
+    @apply bg-cyan-100 text-cyan-800;
+  }
+
+  .role-support {
+    @apply bg-purple-100 text-purple-800;
+  }
+
+  .role-admin {
+    @apply bg-orange-100 text-orange-800;
+  }
+}
+
+/* Dropdown animations */
+.dropdown-enter {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.dropdown-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+
+.dropdown-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dropdown-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+
+/* Table hover effects */
+.table-row:hover {
+  background-color: var(--secondary-bg);
+}
+
+/* Tooltip styles */
+.tooltip {
+  @apply absolute z-50 px-2 py-1 text-xs text-white bg-gray-900 rounded whitespace-nowrap;
+}
+
+.tooltip-arrow {
+  @apply absolute w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900;
+}
+
+/* Loading states */
+.loading-pulse {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+
+/* Responsive breakpoints adjustments */
+@media (max-width: 1024px) {
+  .hide-lg {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .hide-md {
+    display: none !important;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+}

@@ -1,0 +1,1 @@
+// SRP: Validates and queues incoming webhook payloads for reliable, asynchronous processing.

@@ -1,0 +1,1 @@
+// SRP: Defines shared TypeScript types and interfaces used throughout the application.

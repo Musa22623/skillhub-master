@@ -1,0 +1,1 @@
+// SRP: Provides a simple, unified interface for adding jobs to the RabbitMQ background queue.

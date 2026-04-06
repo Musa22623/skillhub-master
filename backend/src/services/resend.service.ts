@@ -1,0 +1,1 @@
+// SRP: Encapsulates all API calls to Resend.

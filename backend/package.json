@@ -1,0 +1,13 @@
+{
+  "name": "skillhub-backend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'Backend dev script not implemented yet'",
+    "build": "echo 'Backend build script not implemented yet'",
+    "start": "echo 'Backend start script not implemented yet'",
+    "lint": "echo 'Backend lint script not implemented yet'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

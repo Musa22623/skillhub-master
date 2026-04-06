@@ -1,0 +1,1 @@
+// Schema definitions for product data models

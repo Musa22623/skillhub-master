@@ -1,0 +1,12 @@
+{
+    // SRP: To enforce consistent editor settings for all developers.
+    // WHAT: Defines workspace-specific settings like default formatter (Prettier), linter configurations (ESLint), tab spacing, and file associations.
+    // WHY: Ensures a consistent development environment, reducing "it works on my machine" issues and standardizing code style across the entire project.
+    // DEPENDENCIES: VS Code and relevant extensions (e.g., Prettier, ESLint).
+    "github.copilot.enable": {
+        "*": false,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    }
+}

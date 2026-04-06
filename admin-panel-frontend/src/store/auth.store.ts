@@ -1,0 +1,1 @@
+// SRP: Manages the authentication state of the admin user, including their permissions.

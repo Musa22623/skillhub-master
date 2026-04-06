@@ -1,0 +1,4 @@
+-- SRP: Contains sequential, version-controlled SQL scripts for evolving the database schema.
+-- WHAT: A migration file containing the initial `CREATE TABLE` and `CREATE TYPE` statements.
+-- WHY: Allows for reliable and automated database schema updates via the Supabase CLI.
+-- REF: "For database schema deployment & management we use the Supabase CLI and Migrations..."

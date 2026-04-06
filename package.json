@@ -1,0 +1,30 @@
+{
+  "name": "skillhub-lms-monorepo",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend",
+    "admin-panel-frontend"
+  ],
+  "scripts": {
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:admin": "npm run dev --workspace=admin-panel-frontend",
+    "dev:backend": "npm run dev --workspace=backend",
+    "build:frontend": "npm run build --workspace=frontend",
+    "build:admin": "npm run build --workspace=admin-panel-frontend",
+    "build:backend": "npm run build --workspace=backend",
+    "build:all": "npm run build:backend && npm run build:frontend && npm run build:admin",
+    "lint:frontend": "npm run lint --workspace=frontend",
+    "lint:admin": "npm run lint --workspace=admin-panel-frontend",
+    "lint:backend": "npm run lint --workspace=backend",
+    "lint:all": "npm run lint:backend && npm run lint:frontend && npm run lint:admin",
+    "install:all": "npm install && npm install --workspace=backend && npm install --workspace=frontend && npm install --workspace=admin-panel-frontend"
+  },
+  "devDependencies": {
+    "@types/node": "^20"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

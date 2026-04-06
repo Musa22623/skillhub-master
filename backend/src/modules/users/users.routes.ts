@@ -1,0 +1,1 @@
+// SRP: Defines all API routes for the users module (e.g., GET /api/admin/users, PUT /api/client/me/account-details).

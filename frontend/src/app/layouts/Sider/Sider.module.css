@@ -1,0 +1,27 @@
+.nav-item {
+  @apply flex items-center gap-[12px] px-[16px] py-[8px] rounded-full cursor-pointer border border-[#FFF];
+}
+
+.active {
+  @apply bg-[#e9f6ff] border border-[#e3e7ea] font-[600] text-[#2584bf];
+}
+
+.inactive {
+  @apply hover:bg-[#f1f5f4] hover:border-[#e3e7ea] hover:text-[#224762];
+}
+
+.bottom-inactive {
+  @apply hover:bg-[#f1f5f4] hover:border-[#e3e7ea] hover:text-[#224762] text-[#949494];
+}
+
+.svg-icon {
+  @apply fill-[#4B4B4B];
+}
+
+.svg-bottom-icon {
+  @apply fill-[#757575];
+}
+
+.svg-icon-active {
+  @apply fill-[#2584bf];
+}

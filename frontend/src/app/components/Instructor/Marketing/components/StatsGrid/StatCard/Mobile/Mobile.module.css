@@ -1,0 +1,107 @@
+/* .stat-card {
+
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "icon header"
+    "icon value"
+    "icon comparison"
+    "footer footer";
+  gap: 4px 12px;
+  transition: transform 0.2s ease;
+}
+
+.stat-card:active {
+  transform: scale(0.98);
+}
+
+.stat-icon {
+  grid-area: icon;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.stat-name {
+  grid-area: header;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.stat-value {
+  grid-area: value;
+  color: #0f172a;
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.stat-percentage {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 100px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.stat-percentage.positive {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.stat-percentage.negative {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.stat-percentage.neutral {
+  background: rgba(100, 116, 139, 0.1);
+  color: #64748b;
+}
+
+.stat-comparison {
+  grid-area: comparison;
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+.stat-footer {
+  grid-area: footer;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.stat-footer-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  color: #0f172a;
+  font-weight: 500;
+}
+
+.footer-icon {
+  width: 16px;
+  height: 16px;
+  color: #0ea5e9;
+} */
