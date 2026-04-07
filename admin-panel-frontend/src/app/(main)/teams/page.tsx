@@ -1,10 +1,5 @@
-import PlaceholderPage from '@/components/PlaceholderPage';
+import { redirect } from 'next/navigation';
 
 export default function TeamsPage() {
-  return (
-    <PlaceholderPage 
-      title="Teams Management" 
-      description="This page will handle teams management functionality."
-    />
-  );
+  redirect('/teams/contract');
 }

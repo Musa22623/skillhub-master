@@ -1,10 +1,5 @@
-import PlaceholderPage from '@/components/PlaceholderPage';
+import InstructorsPageClient from './InstructorsPageClient';
 
 export default function InstructorsPage() {
-  return (
-    <PlaceholderPage 
-      title="Instructors Management" 
-      description="This page will handle instructors management functionality."
-    />
-  );
+  return <InstructorsPageClient />;
 }

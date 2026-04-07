@@ -1,10 +1,5 @@
-import PlaceholderPage from '@/components/PlaceholderPage';
+import AllProductsPageClient from './AllProductsPageClient';
 
 export default function ProductsPage() {
-  return (
-    <PlaceholderPage 
-      title="Products Management" 
-      description="This page will handle products management functionality."
-    />
-  );
+  return <AllProductsPageClient />;
 }

@@ -31,6 +31,8 @@
   --warning-color: #FAAD14;
   --info-color: #1890FF;
   --draft-color: #8C8C8C;
+  --processing-color: #0365f2;
+  --suspended-color: #595959;
 }
 
 /* Base Styles */

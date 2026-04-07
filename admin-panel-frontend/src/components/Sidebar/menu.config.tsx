@@ -53,7 +53,7 @@ export const menuConfig: MenuItem[] = [
           {
             key: "instructor-applications",
             label: "Applications",
-            path: "",
+            path: "/instructors/applications",
           },
         ],
       },
@@ -65,12 +65,12 @@ export const menuConfig: MenuItem[] = [
           {
             key: "team-contracts",
             label: "Team Contracts",
-            path: "/teams",
+            path: "/teams/contract",
           },
           {
             key: "team-members",
             label: "Team Members",
-            path: "/teams",
+            path: "/teams/members",
           },
         ],
       },

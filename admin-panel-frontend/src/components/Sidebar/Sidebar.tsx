@@ -4,6 +4,36 @@ import React, { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { menuConfig, MenuItem } from "./menu.config";
 
+function collectMenuPaths(items: MenuItem[]): string[] {
+  const out: string[] = [];
+  for (const item of items) {
+    if (item.path) {
+      out.push(item.path);
+    }
+    if (item.children) {
+      out.push(...collectMenuPaths(item.children));
+    }
+  }
+  return out;
+}
+
+/** Longest path wins so `/instructors` does not stay active on `/instructors/applications`. */
+function longestMatchingMenuPath(pathname: string, paths: string[]): string | null {
+  const seen = new Set<string>();
+  const unique = paths.filter((p) => {
+    if (seen.has(p)) return false;
+    seen.add(p);
+    return true;
+  });
+  const candidates = unique.filter(
+    (p) => pathname === p || pathname.startsWith(`${p}/`),
+  );
+  if (candidates.length === 0) {
+    return null;
+  }
+  return candidates.reduce((a, b) => (a.length >= b.length ? a : b));
+}
+
 const Sidebar: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
@@ -35,6 +65,12 @@ const Sidebar: React.FC = () => {
 
   const isActivePath = (path?: string) =>
     !!path && (pathname === path || pathname.startsWith(`${path}/`));
+
+  const menuPaths = useMemo(() => collectMenuPaths(menuConfig), []);
+  const activeLeafPath = useMemo(
+    () => longestMatchingMenuPath(pathname, menuPaths),
+    [pathname, menuPaths],
+  );
 
   const activeParentKey = useMemo(() => {
     for (const item of menuConfig) {
@@ -70,7 +106,7 @@ const Sidebar: React.FC = () => {
           activeParentKey === item.key &&
           !collapsedParents.has(item.key));
       const hasNestedGroups = depth === 0 && item.children?.some((child) => child.children);
-      const isActive = isActivePath(item.path);
+      const isActive = !!item.path && item.path === activeLeafPath;
       const isParentActive = activeParentKey === item.key;
 
       if (item.children) {
