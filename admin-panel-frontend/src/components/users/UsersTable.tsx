@@ -102,6 +102,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
   }, [search, data]);
 
   const allSelected = filtered.length > 0 && filtered.every((u) => selectedIds.has(u.id));
+  const someSelected = selectedIds.size > 0 && !allSelected;
 
   const toggleRow = (id: string) => {
     setSelectedIds((prev) => {
@@ -285,8 +286,8 @@ export const UsersTable: React.FC<UsersTableProps> = ({
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-100">
       {/* Toolbar */}
-      <div className="flex flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex w-full max-w-xl items-center gap-2 bg-white border border-gray-200 rounded-md px-3 py-2">
+      <div className="flex flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between border-b border-gray-100 bg-[#FAFAFA]">
+        <div className="flex w-full max-w-xl items-center gap-2 bg-white border border-gray-200 rounded-md px-3 py-2 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
           <SearchIcon size={18} className="text-gray-500" />
           <input
             ref={searchRef}
@@ -298,20 +299,22 @@ export const UsersTable: React.FC<UsersTableProps> = ({
         </div>
         <div className="flex flex-wrap gap-2">
           <button
-            className="inline-flex items-center gap-2 rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+            className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
             onClick={() => onSort?.('name', 'asc')}
           >
             <SortIcon size={16} /> Sort
           </button>
           <button
-            className="inline-flex items-center gap-2 rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+            className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
             onClick={() => onFilter?.({ status: 'active' })}
           >
             <FilterIcon size={16} /> Filter
           </button>
           <div className="relative">
             <button
-              className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm border ${selectedIds.size ? 'border-gray-300 text-gray-800 bg-gray-50' : 'border-gray-200 text-gray-400'}`}
+              className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm border ${
+                selectedIds.size ? 'border-[#458BC1] text-[#03314B] bg-[#E9F2FB]' : 'border-gray-200 text-gray-400 bg-white'
+              }`}
               disabled={!selectedIds.size}
             >
               <ChevronDownIcon size={16} /> Bulk Actions
@@ -348,6 +351,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
         onToggleRow={(id) => toggleRow(id as string)}
         onToggleAll={(checked) => toggleAll(checked)}
         allSelected={allSelected}
+        someSelected={someSelected}
         tableClassName="min-w-[1100px]"
         columns={columns}
       />

@@ -193,6 +193,7 @@ export function InstructorsTable({ instructors = INSTRUCTORS }: { instructors?: 
   const showingCount = visibleRows.length;
 
   const allVisibleSelected = visibleRows.length > 0 && visibleRows.every((r) => selectedIds.has(r.id));
+  const someSelected = selectedIds.size > 0 && !allVisibleSelected;
 
   const toggleSelectAll = (checked: boolean) => {
     setSelectedIds((prev) => {
@@ -689,8 +690,9 @@ export function InstructorsTable({ instructors = INSTRUCTORS }: { instructors?: 
         selectable
         selectedIds={selectedIds}
         onToggleRow={(id) => toggleRow(id as number)}
-        onToggleAll={toggleSelectAll}
+        onToggleAll={(checked) => toggleSelectAll(checked)}
         allSelected={allVisibleSelected}
+        someSelected={someSelected}
         tableClassName="min-w-[1080px]"
         rowClassName={(row) => (row.payoutStatus === 'suspended' ? 'opacity-70' : '')}
         columns={columns}
