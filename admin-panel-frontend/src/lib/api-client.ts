@@ -1,1 +1,0 @@
-// SRP: An Axios or Fetch-based API client for all communication with the `/api/admin` backend endpoints.

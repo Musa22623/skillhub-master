@@ -1,0 +1,166 @@
+import type { PageConfig } from "@/app/components/types/ui";
+import type { AdminRecord } from "@/app/sections/shared/config/shared";
+import { CouponsPromotionsPage } from "@/app/sections/financials/pages/CouponsPromotionsPage";
+import {
+  amountColumn,
+  createAction,
+  createPage,
+  createRecord,
+  createRowAction,
+  createStat,
+  metricColumn,
+  nameColumn,
+  searchFilter,
+  selectFilter,
+  statusColumn,
+  textColumn,
+  updatedColumn,
+} from "@/app/sections/shared/config/shared";
+
+const financeActions = [
+  createRowAction("open", "Open", (row) => `Opened ${row.name}.`),
+  createRowAction("download", "Download", (row) => `Downloaded report for ${row.name}.`, "ghost"),
+];
+
+export const financialPages: PageConfig<AdminRecord>[] = [
+  createPage({
+    id: "transactions",
+    path: "financials/transactions",
+    title: "Transactions",
+    section: "Financials",
+    description: "Review payment flow, settlement status, and reconciliation coverage.",
+    stats: [
+      createStat({ id: "txn-volume", label: "Processed today", value: "$84.2k", change: "+11.4%", tone: "success", icon: "money" }),
+      createStat({ id: "txn-count", label: "Transactions", value: "1,284", change: "+72", tone: "success", icon: "chart" }),
+      createStat({ id: "txn-failed", label: "Failed", value: "18", change: "Investigate", tone: "warning", icon: "system" }),
+      createStat({ id: "txn-refunds", label: "Refunds", value: "$2.6k", change: "Stable", tone: "info", icon: "document" }),
+    ],
+    actions: [
+      createAction("reconcile", "Reconcile", "Reconciliation started.", "primary", "refresh"),
+      createAction("export-transactions", "Export", "Transaction export queued.", "secondary", "document"),
+    ],
+    filters: [
+      searchFilter("Search transactions or customers"),
+      selectFilter("status", "Status", [
+        { label: "Paid", value: "paid" },
+        { label: "Pending", value: "pending" },
+        { label: "Failed", value: "failed" },
+        { label: "Refunded", value: "refunded" },
+      ], { columnId: "col_7" }),
+    ],
+    sortOptions: [
+      { id: "processed-desc", label: "Newest", columnId: "col_4", direction: "desc" },
+      { id: "processed-asc", label: "Oldest", columnId: "col_4", direction: "asc" },
+      { id: "billing-asc", label: "Billing (A-Z)", columnId: "col_1", direction: "asc" },
+      { id: "billing-desc", label: "Billing (Z-A)", columnId: "col_1", direction: "desc" },
+      { id: "amount-desc", label: "Amount (High to Low)", columnId: "col_2", direction: "desc" },
+      { id: "amount-asc", label: "Amount (Low to High)", columnId: "col_2", direction: "asc" },
+    ],
+    bulkActions: [
+      { id: "refund", label: "Process Refund", message: (rows) => `Refund flow would open for ${rows.length} selected transactions.` },
+      { id: "cancel", label: "Cancel Transaction", message: (rows) => `Cancellation would run for ${rows.length} selected transactions.` },
+      { id: "export", label: "Export Selected", message: (rows) => `Export queued for ${rows.length} selected transactions.` },
+    ],
+    columns: [
+      nameColumn("Transaction"),
+      textColumn("owner", "Customer"),
+      amountColumn(),
+      statusColumn(),
+      updatedColumn("Processed"),
+    ],
+    rows: [
+      createRecord({ id: "txn-1", name: "TXN-20481", subtitle: "Leadership Accelerator renewal", owner: "Northwind Analytics", amount: "$12,000", status: "Paid", updatedAt: "3 minutes ago" }),
+      createRecord({ id: "txn-2", name: "TXN-20480", subtitle: "Ops Playbook Live seat purchase", owner: "Maple Street Learning", amount: "$1,480", status: "Pending", updatedAt: "18 minutes ago" }),
+      createRecord({ id: "txn-3", name: "TXN-20475", subtitle: "Growth Bundle purchase", owner: "Signal Path", amount: "$890", status: "Refunded", updatedAt: "Today" }),
+      createRecord({ id: "txn-4", name: "TXN-20469", subtitle: "Team Growth monthly renewal", owner: "Kindred Labs", amount: "$399", status: "Failed", updatedAt: "Today" }),
+    ],
+    rowActions: financeActions,
+  }),
+  createPage({
+    id: "subscription-plans",
+    path: "financials/subscription-plans",
+    title: "Subscription Plans",
+    section: "Financials",
+    description: "Maintain pricing tiers, packaging, and plan lifecycle settings.",
+    stats: [
+      createStat({ id: "plan-live", label: "Live plans", value: "12", change: "Current", tone: "info", icon: "money" }),
+      createStat({ id: "plan-conversion", label: "Trial conversion", value: "38%", change: "+2 pts", tone: "success", icon: "chart" }),
+      createStat({ id: "plan-enterprise", label: "Enterprise deals", value: "24", change: "+3", tone: "success", icon: "users" }),
+      createStat({ id: "plan-legacy", label: "Legacy plans", value: "4", change: "Sunset", tone: "warning", icon: "system" }),
+    ],
+    actions: [
+      createAction("new-plan", "Create Plan", "Plan editor opened.", "primary", "money"),
+      createAction("pricing-preview", "Preview Pricing", "Pricing preview opened.", "secondary", "document"),
+    ],
+    filters: [
+      searchFilter("Search plans or packaging"),
+      selectFilter("status", "Status", [
+        { label: "Active", value: "active" },
+        { label: "Draft", value: "draft" },
+        { label: "Legacy", value: "legacy" },
+      ]),
+    ],
+    columns: [
+      nameColumn("Plan"),
+      textColumn("plan", "Billing Cycle"),
+      amountColumn("Price"),
+      metricColumn("Subscribers"),
+      statusColumn(),
+    ],
+    rows: [
+      createRecord({ id: "plan-1", name: "Starter Monthly", subtitle: "Solo learner tier", plan: "Monthly", amount: "$49", metric: "1,842", status: "Active" }),
+      createRecord({ id: "plan-2", name: "Pro Annual", subtitle: "Advanced professional tier", plan: "Annual", amount: "$1,200", metric: "624", status: "Active" }),
+      createRecord({ id: "plan-3", name: "Team Growth", subtitle: "Seat-based team plan", plan: "Monthly", amount: "$399", metric: "208", status: "Draft" }),
+      createRecord({ id: "plan-4", name: "Legacy Business", subtitle: "Sunsetting SKU", plan: "Annual", amount: "$8,000", metric: "14", status: "Legacy" }),
+    ],
+    rowActions: financeActions,
+  }),
+  createPage({
+    id: "payouts",
+    path: "financials/payouts",
+    title: "Payouts",
+    section: "Financials",
+    description: "Track instructor and partner payouts, cycle readiness, and holdbacks.",
+    stats: [
+      createStat({ id: "pay-cycle", label: "Next cycle total", value: "$42.7k", change: "Apr 15", tone: "info", icon: "money" }),
+      createStat({ id: "pay-ready", label: "Ready to pay", value: "188", change: "+12", tone: "success", icon: "users" }),
+      createStat({ id: "pay-holds", label: "On hold", value: "9", change: "Tax issues", tone: "warning", icon: "system" }),
+      createStat({ id: "pay-disputes", label: "Disputes", value: "2", change: "Low", tone: "success", icon: "document" }),
+    ],
+    actions: [
+      createAction("run-payout", "Run Payout", "Payout batch started.", "primary", "money"),
+      createAction("download-summary", "Download Summary", "Payout summary downloading.", "secondary", "document"),
+    ],
+    filters: [
+      searchFilter("Search payees or payout cycles"),
+      selectFilter("status", "Status", [
+        { label: "Ready", value: "ready" },
+        { label: "Processing", value: "processing" },
+        { label: "On hold", value: "hold" },
+        { label: "Paid", value: "paid" },
+      ]),
+    ],
+    columns: [
+      nameColumn("Payee"),
+      textColumn("category", "Cycle"),
+      amountColumn("Payout"),
+      statusColumn(),
+      updatedColumn("Scheduled"),
+    ],
+    rows: [
+      createRecord({ id: "pay-1", name: "Nina Alvarez", subtitle: "Course revenue share", category: "Apr 2026", amount: "$8,420", status: "Ready", updatedAt: "Apr 15" }),
+      createRecord({ id: "pay-2", name: "Jordan Malik", subtitle: "Workshop facilitation", category: "Apr 2026", amount: "$4,160", status: "Processing", updatedAt: "Apr 15" }),
+      createRecord({ id: "pay-3", name: "Olivia Hart", subtitle: "Enterprise coaching", category: "Apr 2026", amount: "$6,200", status: "Paid", updatedAt: "Apr 1" }),
+      createRecord({ id: "pay-4", name: "Ethan Rivera", subtitle: "Growth programs", category: "Apr 2026", amount: "$2,880", status: "On hold", updatedAt: "Apr 15" }),
+    ],
+    rowActions: financeActions,
+  }),
+  createPage({
+    id: "coupons",
+    path: "financials/coupons",
+    title: "Coupons & Promotions",
+    section: "Financials",
+    description: "Manage discounting rules, promotional windows, and redemption health.",
+    component: CouponsPromotionsPage,
+  }),
+];

@@ -1,5 +1,5 @@
 import { NextApp } from "@/app/NextApp";
 
-export default function HomePage() {
+export default function CatchAllPage() {
   return <NextApp />;
 }

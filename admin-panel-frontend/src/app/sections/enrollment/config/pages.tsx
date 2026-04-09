@@ -1,0 +1,220 @@
+import type { PageConfig } from "@/app/components/types/ui";
+import type { AdminRecord } from "@/app/sections/shared/config/shared";
+import {
+  createAction,
+  createPage,
+  createRecord,
+  createRowAction,
+  createStat,
+  metricColumn,
+  nameColumn,
+  searchFilter,
+  selectFilter,
+  statusColumn,
+  textColumn,
+  updatedColumn,
+} from "@/app/sections/shared/config/shared";
+
+const enrollmentActions = [
+  createRowAction("view", "View", (row) => `Opened ${row.name}.`),
+  createRowAction("message", "Message", (row) => `Prepared message for ${row.name}.`, "ghost"),
+];
+
+export const enrollmentPages: PageConfig<AdminRecord>[] = [
+  createPage({
+    id: "enrollments",
+    path: "enrollment/enrollments",
+    title: "Enrollments",
+    section: "Enrollment & Progress",
+    description: "Track active enrollments, course assignment, and fulfillment health.",
+    stats: [
+      createStat({ id: "enr-total", label: "Total enrollments", value: "42,180", change: "+6.4%", tone: "success", icon: "chart" }),
+      createStat({ id: "enr-new", label: "New this week", value: "1,126", change: "+84", tone: "success", icon: "users" }),
+      createStat({ id: "enr-risk", label: "At risk", value: "274", change: "Needs intervention", tone: "warning", icon: "system" }),
+      createStat({ id: "enr-complete", label: "Completed", value: "24,904", change: "59%", tone: "info", icon: "document" }),
+    ],
+    actions: [
+      createAction("bulk-enroll", "Bulk Enroll", "Bulk enrollment flow opened.", "primary", "users"),
+      createAction("export-enrollments", "Export", "Enrollment export queued.", "secondary", "document"),
+    ],
+    filters: [
+      searchFilter("Search learners, products, or cohorts"),
+      selectFilter("status", "Status", [
+        { label: "Active", value: "active" },
+        { label: "Completed", value: "completed" },
+        { label: "Pending", value: "pending" },
+        { label: "At risk", value: "risk" },
+      ]),
+    ],
+    columns: [
+      nameColumn("Learner"),
+      textColumn("category", "Product"),
+      textColumn("plan", "Enrollment Type"),
+      metricColumn("Progress"),
+      statusColumn(),
+      updatedColumn("Updated"),
+    ],
+    rows: [
+      createRecord({ id: "enr-1", name: "Avery Scott", subtitle: "Northwind Analytics", category: "Leadership Accelerator", plan: "Team seat", metric: "74%", status: "Active", updatedAt: "Today" }),
+      createRecord({ id: "enr-2", name: "Jack Foster", subtitle: "Northwind Analytics", category: "Manager Enablement Sprint", plan: "Direct purchase", metric: "18%", status: "Pending", updatedAt: "Today" }),
+      createRecord({ id: "enr-3", name: "Harper Quinn", subtitle: "Maple Street Learning", category: "Customer Success Lab", plan: "Bundle", metric: "100%", status: "Completed", updatedAt: "Yesterday" }),
+      createRecord({ id: "enr-4", name: "Elijah Flores", subtitle: "Maple Street Learning", category: "Ops Playbook Live", plan: "Cohort", metric: "22%", status: "At risk", updatedAt: "Yesterday" }),
+    ],
+    rowActions: enrollmentActions,
+  }),
+  createPage({
+    id: "user-subscriptions",
+    path: "enrollment/user-subscriptions",
+    title: "User Subscriptions",
+    section: "Enrollment & Progress",
+    description: "Review recurring access, plan state, and renewal timing.",
+    stats: [
+      createStat({ id: "sub-active", label: "Active subscriptions", value: "6,842", change: "+3.2%", tone: "success", icon: "chart" }),
+      createStat({ id: "sub-mrr", label: "Expansion this month", value: "$24.8k", change: "+9.1%", tone: "success", icon: "money" }),
+      createStat({ id: "sub-delinquent", label: "Delinquent", value: "97", change: "Watch list", tone: "warning", icon: "system" }),
+      createStat({ id: "sub-renew", label: "Renewing in 30 days", value: "388", change: "Pipeline", tone: "info", icon: "calendar" }),
+    ],
+    actions: [
+      createAction("new-subscription", "Add Subscription", "Subscription drawer opened.", "primary", "money"),
+      createAction("billing-sync", "Billing Sync", "Billing sync queued.", "secondary", "refresh"),
+    ],
+    filters: [
+      searchFilter("Search subscribers or plans"),
+      selectFilter("status", "Status", [
+        { label: "Active", value: "active" },
+        { label: "Past due", value: "due" },
+        { label: "Canceled", value: "canceled" },
+        { label: "Trial", value: "trial" },
+      ]),
+    ],
+    columns: [
+      nameColumn("Subscriber"),
+      textColumn("plan", "Plan"),
+      textColumn("amount", "Billing"),
+      statusColumn(),
+      updatedColumn("Renewal"),
+    ],
+    rows: [
+      createRecord({ id: "sub-1", name: "Sophia Chen", subtitle: "Finance admin", plan: "Pro Annual", amount: "$1,200 / year", status: "Active", updatedAt: "Jun 3" }),
+      createRecord({ id: "sub-2", name: "Mia Patel", subtitle: "Community moderator", plan: "Team Growth", amount: "$399 / month", status: "Trial", updatedAt: "Apr 19" }),
+      createRecord({ id: "sub-3", name: "Lucas Kim", subtitle: "Subscriber account", plan: "Starter Monthly", amount: "$49 / month", status: "Past due", updatedAt: "Apr 8" }),
+      createRecord({ id: "sub-4", name: "Ava Morgan", subtitle: "Enterprise customer success", plan: "Enterprise Renewal", amount: "$18,000 / year", status: "Active", updatedAt: "Sep 1" }),
+    ],
+    rowActions: enrollmentActions,
+  }),
+  createPage({
+    id: "user-progress",
+    path: "enrollment/user-progress",
+    title: "User Progress & Analytics",
+    section: "Enrollment & Progress",
+    description: "Measure learning progress, completion velocity, and intervention needs.",
+    actions: [
+      createAction("export-progress", "Export Report", "Progress report exported.", "primary", "document"),
+      createAction("send-nudge", "Send Nudge", "Re-engagement messages queued.", "secondary", "mail"),
+    ],
+    tabs: [
+      {
+        id: "overview",
+        label: "Overview",
+        stats: [
+          createStat({ id: "prog-avg", label: "Average completion", value: "63%", change: "+4 pts", tone: "success", icon: "chart" }),
+          createStat({ id: "prog-streak", label: "Weekly active learners", value: "11,240", change: "+7.3%", tone: "success", icon: "users" }),
+          createStat({ id: "prog-risk", label: "Intervention queue", value: "218", change: "Needs follow-up", tone: "warning", icon: "mail" }),
+          createStat({ id: "prog-certs", label: "Certificates issued", value: "1,406", change: "This month", tone: "info", icon: "document" }),
+        ],
+        filters: [
+          searchFilter("Search learners or products"),
+          selectFilter("status", "Status", [
+            { label: "On track", value: "track" },
+            { label: "At risk", value: "risk" },
+            { label: "Completed", value: "completed" },
+          ]),
+        ],
+        columns: [
+          nameColumn("Learner"),
+          textColumn("category", "Program"),
+          metricColumn("Progress"),
+          statusColumn(),
+          updatedColumn("Last activity"),
+        ],
+        rows: [
+          createRecord({ id: "prog-1", name: "Avery Scott", subtitle: "Northwind Analytics", category: "Leadership Accelerator", metric: "74%", status: "On track", updatedAt: "2 hours ago" }),
+          createRecord({ id: "prog-2", name: "Elijah Flores", subtitle: "Northwind Analytics", category: "Ops Playbook Live", metric: "22%", status: "At risk", updatedAt: "Yesterday" }),
+          createRecord({ id: "prog-3", name: "Harper Quinn", subtitle: "Maple Street Learning", category: "Customer Success Lab", metric: "100%", status: "Completed", updatedAt: "Yesterday" }),
+        ],
+        rowActions: enrollmentActions,
+      },
+      {
+        id: "cohorts",
+        label: "Cohorts",
+        stats: [
+          createStat({ id: "cohort-active", label: "Active cohorts", value: "18", change: "+2", tone: "success", icon: "community" }),
+          createStat({ id: "cohort-fill", label: "Average fill", value: "86%", change: "+1 pt", tone: "success", icon: "chart" }),
+          createStat({ id: "cohort-wait", label: "Waitlisted", value: "94", change: "High demand", tone: "warning", icon: "users" }),
+          createStat({ id: "cohort-flag", label: "Needs facilitator", value: "3", change: "Coverage", tone: "info", icon: "calendar" }),
+        ],
+        filters: [
+          searchFilter("Search cohorts or facilitators"),
+          selectFilter("status", "Status", [
+            { label: "Active", value: "active" },
+            { label: "Planning", value: "planning" },
+            { label: "Waitlisted", value: "wait" },
+          ]),
+        ],
+        columns: [
+          nameColumn("Cohort"),
+          textColumn("owner", "Facilitator"),
+          textColumn("count", "Learners"),
+          statusColumn(),
+          updatedColumn("Start"),
+        ],
+        rows: [
+          createRecord({ id: "cohort-1", name: "Leadership Accelerator - Spring", subtitle: "Week 3 of 12", owner: "Nina Alvarez", count: "48 learners", status: "Active", updatedAt: "Apr 8" }),
+          createRecord({ id: "cohort-2", name: "Growth Ops Intensive", subtitle: "Upcoming launch", owner: "Jordan Malik", count: "34 learners", status: "Planning", updatedAt: "Apr 15" }),
+          createRecord({ id: "cohort-3", name: "Success Lab - Enterprise", subtitle: "Invite-only", owner: "Olivia Hart", count: "18 learners", status: "Waitlisted", updatedAt: "Apr 18" }),
+        ],
+        rowActions: enrollmentActions,
+      },
+    ],
+  }),
+  createPage({
+    id: "certificate-management",
+    path: "enrollment/certificate-management",
+    title: "Certificate Management",
+    section: "Enrollment & Progress",
+    description: "Monitor certificate templates, issue failures, and credential delivery health.",
+    stats: [
+      createStat({ id: "cert-issued", label: "Issued this month", value: "1,406", change: "+12.5%", tone: "success", icon: "document" }),
+      createStat({ id: "cert-failed", label: "Delivery failures", value: "14", change: "Investigate", tone: "warning", icon: "system" }),
+      createStat({ id: "cert-template", label: "Active templates", value: "22", change: "Current", tone: "info", icon: "products" }),
+      createStat({ id: "cert-pending", label: "Pending approval", value: "31", change: "Backlog", tone: "warning", icon: "mail" }),
+    ],
+    actions: [
+      createAction("new-template", "New Template", "Template editor opened.", "primary", "document"),
+      createAction("retry-failures", "Retry Failures", "Failed deliveries are retrying.", "secondary", "refresh"),
+    ],
+    filters: [
+      searchFilter("Search templates or recipients"),
+      selectFilter("status", "Status", [
+        { label: "Delivered", value: "delivered" },
+        { label: "Pending", value: "pending" },
+        { label: "Failed", value: "failed" },
+        { label: "Draft", value: "draft" },
+      ]),
+    ],
+    columns: [
+      nameColumn("Certificate"),
+      textColumn("category", "Template"),
+      textColumn("owner", "Recipient"),
+      statusColumn(),
+      updatedColumn("Issued"),
+    ],
+    rows: [
+      createRecord({ id: "cert-1", name: "Leadership Accelerator Completion", subtitle: "Credential ID CERT-2041", category: "Executive template", owner: "Avery Scott", status: "Delivered", updatedAt: "Today" }),
+      createRecord({ id: "cert-2", name: "Ops Playbook Completion", subtitle: "Credential ID CERT-2035", category: "Workshop template", owner: "Elijah Flores", status: "Pending", updatedAt: "Today" }),
+      createRecord({ id: "cert-3", name: "Customer Success Lab Completion", subtitle: "Credential ID CERT-1988", category: "Team template", owner: "Harper Quinn", status: "Delivered", updatedAt: "Yesterday" }),
+      createRecord({ id: "cert-4", name: "Revenue Planning Workshop", subtitle: "Credential ID CERT-1981", category: "Workshop template", owner: "Jack Foster", status: "Failed", updatedAt: "Yesterday" }),
+    ],
+    rowActions: enrollmentActions,
+  }),
+];

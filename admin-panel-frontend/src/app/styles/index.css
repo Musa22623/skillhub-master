@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-surface-page text-text-primary antialiased;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    @apply outline-none;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply rounded-panel border border-surface-line bg-white shadow-panel;
+  }
+
+  .page-container {
+    @apply mx-auto max-w-content px-4 py-4 md:px-6 md:py-5;
+  }
+}
