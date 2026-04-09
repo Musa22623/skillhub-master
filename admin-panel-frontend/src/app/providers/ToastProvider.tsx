@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useCallback, useContext, useMemo, useState, type PropsWithChildren } from "react";
 
 type ToastItem = {
