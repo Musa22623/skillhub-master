@@ -1,3 +1,5 @@
+"use client";
+
 type TablePaginationProps = {
   currentPage: number;
   pageCount: number;

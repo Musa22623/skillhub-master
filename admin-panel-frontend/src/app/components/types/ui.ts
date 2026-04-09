@@ -80,6 +80,8 @@ export type SortOption = {
   direction: SortDirection;
 };
 
+export type PageDataMode = "client" | "server";
+
 export type TableAction<Row> = {
   id: string;
   label: string;
@@ -143,7 +145,11 @@ export type PageConfig<Row = Record<string, unknown>> = {
   bulkActions?: BulkTableAction<Row>[];
   bulkActionLabel?: string;
   useLegacyData?: boolean;
+  dataMode?: PageDataMode;
   density?: "compact" | "comfortable";
+  defaultSortColumn?: string;
+  defaultPageSize?: number;
+  rowsPerPageOptions?: number[];
   tabs?: TabConfig<Row>[];
   emptyMessage?: string;
   notes?: string[];

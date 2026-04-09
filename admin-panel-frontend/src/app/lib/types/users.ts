@@ -1,5 +1,7 @@
-import type { StatConfig } from "@/app/components/types/ui";
+import type { SortDirection, StatConfig } from "@/app/components/types/ui";
 import type { AdminRecord } from "@/app/sections/shared/config/shared";
+import type { ConfiguredPagePagination, ConfiguredPageQueryParams } from "@/app/lib/types/admin-page";
+import type { ListResponse, SummaryResponse } from "@/app/lib/types/api";
 
 export type LegacyUserStatDto = {
   id: string;
@@ -30,14 +32,35 @@ export type LegacyUserDto = {
   linkedTo?: string[];
 };
 
-export type UserManagementApiResponse = {
+export type UserManagementApiResponse = ListResponse<LegacyUserDto> & {
   stats: readonly LegacyUserStatDto[];
   rows: readonly LegacyUserDto[];
+  pagination: ConfiguredPagePagination;
+  query: ConfiguredPageQueryParams;
 };
+
+export type UserManagementSummaryApiResponse = SummaryResponse<LegacyUserStatDto>;
 
 export type UserManagementPageData = {
   stats: StatConfig[];
   rows: AdminRecord[];
+  pagination: ConfiguredPagePagination;
+  query: ConfiguredPageQueryParams;
+};
+
+export type UserManagementSummaryData = {
+  stats: StatConfig[];
+};
+
+export type UserManagementQueryParams = {
+  query?: string;
+  status?: string;
+  role?: string;
+  sortBy?: string;
+  sortDir?: SortDirection;
+  page?: number;
+  pageSize?: number;
+  searchFields?: string[];
 };
 
 export type LegacyApplicationDto = {

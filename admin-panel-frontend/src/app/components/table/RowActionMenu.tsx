@@ -1,3 +1,5 @@
+"use client";
+
 import type { TableAction } from "@/app/components/types/ui";
 
 type RowActionMenuProps<Row> = {

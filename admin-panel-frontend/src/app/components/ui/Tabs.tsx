@@ -1,3 +1,5 @@
+"use client";
+
 type TabItem = {
   id: string;
   label: string;

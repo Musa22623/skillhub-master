@@ -12,6 +12,8 @@ import type {
   TeamMembersApiResponse,
   UserManagementApiResponse,
   UserManagementPageData,
+  UserManagementSummaryApiResponse,
+  UserManagementSummaryData,
 } from "@/app/lib/types/users";
 
 function toTitleCase(value: string) {
@@ -117,6 +119,16 @@ export function mapUserManagementApiResponse(
   return {
     stats: response.stats.map(mapLegacyUserStat).filter((stat): stat is StatConfig => stat !== null),
     rows: response.rows.map(mapLegacyUserRow),
+    pagination: response.pagination,
+    query: response.query,
+  };
+}
+
+export function mapUserManagementSummaryApiResponse(
+  response: UserManagementSummaryApiResponse,
+): UserManagementSummaryData {
+  return {
+    stats: response.stats.map(mapLegacyUserStat).filter((stat): stat is StatConfig => stat !== null),
   };
 }
 

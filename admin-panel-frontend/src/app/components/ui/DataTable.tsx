@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/app/components/ui/Button";
 import { RowActionMenu } from "@/app/components/table/RowActionMenu";
@@ -18,6 +20,13 @@ type DataTableProps<Row> = {
   onSelectionChange?: (ids: string[]) => void;
   initialRowsPerPage?: number;
   rowsPerPageOptions?: number[];
+  paginationMode?: "client" | "server";
+  sortingMode?: "client" | "server";
+  currentPage?: number;
+  totalRows?: number;
+  rowsPerPage?: number;
+  onRowsPerPageChange?: (value: number) => void;
+  onPageChange?: (page: number) => void;
   density?: "compact" | "comfortable";
 };
 
@@ -35,6 +44,13 @@ export function DataTable<Row extends { id: string }>({
   onSelectionChange,
   initialRowsPerPage = 25,
   rowsPerPageOptions = [10, 25, 50, 100],
+  paginationMode = "client",
+  sortingMode = "client",
+  currentPage: controlledCurrentPage,
+  totalRows: controlledTotalRows,
+  rowsPerPage: controlledRowsPerPage,
+  onRowsPerPageChange,
+  onPageChange,
   density = "compact",
 }: DataTableProps<Row>) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -44,12 +60,16 @@ export function DataTable<Row extends { id: string }>({
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
   const [openRowMenuId, setOpenRowMenuId] = useState<string | null>(null);
+  const isServerPagination = paginationMode === "server";
+  const isServerSorting = sortingMode === "server";
   const sortColumn = controlledSortColumn ?? internalSortColumn;
   const sortDirection = controlledSortDirection ?? internalSortDirection;
+  const effectiveRowsPerPage = controlledRowsPerPage ?? rowsPerPage;
+  const effectiveCurrentPage = controlledCurrentPage ?? page;
   const comfortable = density === "comfortable";
 
   const visibleRows = useMemo(() => {
-    if (!sortColumn) {
+    if (isServerSorting || !sortColumn) {
       return rows;
     }
 
@@ -70,19 +90,24 @@ export function DataTable<Row extends { id: string }>({
       }
       return 0;
     });
-  }, [columns, rows, sortColumn, sortDirection]);
+  }, [columns, isServerSorting, rows, sortColumn, sortDirection]);
 
-  const pageCount = Math.max(1, Math.ceil(visibleRows.length / rowsPerPage));
-  const currentPage = Math.min(page, pageCount);
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const pagedRows = visibleRows.slice(startIndex, startIndex + rowsPerPage);
+  const totalVisibleRows = isServerPagination ? controlledTotalRows ?? visibleRows.length : visibleRows.length;
+  const pageCount = Math.max(1, Math.ceil(totalVisibleRows / effectiveRowsPerPage));
+  const currentPage = Math.min(effectiveCurrentPage, pageCount);
+  const startIndex = (currentPage - 1) * effectiveRowsPerPage;
+  const pagedRows = isServerPagination
+    ? visibleRows
+    : visibleRows.slice(startIndex, startIndex + effectiveRowsPerPage);
   const currentPageIds = pagedRows.map((row) => row.id);
   const allCurrentPageSelected =
     currentPageIds.length > 0 && currentPageIds.every((id) => selectedIds.includes(id));
 
   useEffect(() => {
-    setPage(1);
-  }, [rowsPerPage, rows, sortColumn, sortDirection]);
+    if (!isServerPagination) {
+      setPage(1);
+    }
+  }, [isServerPagination, rowsPerPage, rows, sortColumn, sortDirection]);
 
   useEffect(() => {
     setSelectedIds([]);
@@ -235,13 +260,13 @@ export function DataTable<Row extends { id: string }>({
       <TablePagination
         currentPage={currentPage}
         pageCount={pageCount}
-        rowsPerPage={rowsPerPage}
+        rowsPerPage={effectiveRowsPerPage}
         rowsPerPageOptions={rowsPerPageOptions}
-        totalRows={visibleRows.length}
+        totalRows={totalVisibleRows}
         startIndex={startIndex}
         pageSize={pagedRows.length}
-        onRowsPerPageChange={setRowsPerPage}
-        onPageChange={setPage}
+        onRowsPerPageChange={isServerPagination ? (onRowsPerPageChange ?? (() => undefined)) : setRowsPerPage}
+        onPageChange={isServerPagination ? (onPageChange ?? (() => undefined)) : setPage}
       />
     </div>
   );

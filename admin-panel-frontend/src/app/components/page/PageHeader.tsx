@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/app/components/ui/Button";
 import type { HeaderAction } from "@/app/components/types/ui";
 

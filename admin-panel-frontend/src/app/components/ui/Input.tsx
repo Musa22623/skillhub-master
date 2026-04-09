@@ -1,3 +1,5 @@
+"use client";
+
 import type { InputHTMLAttributes } from "react";
 import { Icon } from "@/app/components/ui/Icon";
 

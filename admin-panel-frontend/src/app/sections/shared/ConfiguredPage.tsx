@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/app/components/ui/DataTable";
 import { Tabs } from "@/app/components/ui/Tabs";
@@ -6,7 +8,14 @@ import { PageHeader } from "@/app/components/page/PageHeader";
 import { StatsGrid } from "@/app/components/page/StatsGrid";
 import { TableSection } from "@/app/components/page/TableSection";
 import { Card } from "@/app/components/ui/Card";
+import {
+  buildConfiguredPageSearchParams,
+  getDefaultConfiguredPageQuery,
+  mergeConfiguredPageQuery,
+  parseConfiguredPageQuery,
+} from "@/app/lib/configured-page-query";
 import type { ConfiguredPageData } from "@/app/lib/types/admin-page";
+import { getConfiguredPageTableData } from "@/app/lib/services/admin-pages.service";
 import { useToast } from "@/app/providers/ToastProvider";
 import { resolveLegacyStats, resolveLegacyTable } from "@/app/features/legacy/legacyResolver";
 import type {
@@ -19,6 +28,7 @@ import type {
   TabConfig,
   TableColumn,
 } from "@/app/components/types/ui";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 function applyFilters<Row>(
   rows: Row[],
@@ -75,7 +85,11 @@ type ConfiguredPageProps<Row extends { id: string }> = {
 
 export function ConfiguredPage<Row extends { id: string }>({ config, pageData }: ConfiguredPageProps<Row>) {
   const { notify } = useToast();
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const useLegacyData = config.useLegacyData ?? true;
+  const serverMode = config.dataMode === "server";
   const density = config.density ?? "compact";
   const [activeTabId, setActiveTabId] = useState(config.tabs?.[0]?.id ?? "");
   const [filterValues, setFilterValues] = useState<Record<string, FilterValue>>({});
@@ -86,14 +100,18 @@ export function ConfiguredPage<Row extends { id: string }>({ config, pageData }:
     direction: "asc",
     sortId: undefined,
   });
+  const [serverTableData, setServerTableData] = useState<ConfiguredPageData<Row> | null>(null);
 
   const activeTab = useMemo<TabConfig<Row> | undefined>(
     () => config.tabs?.find((tab) => tab.id === activeTabId) ?? config.tabs?.[0],
     [activeTabId, config.tabs],
   );
   const activeDataTab = useMemo(
-    () => pageData?.tabs?.find((tab) => tab.id === activeTab?.id) ?? pageData?.tabs?.[0],
-    [activeTab?.id, pageData?.tabs],
+    () => serverTableData?.tabs?.find((tab) => tab.id === activeTab?.id) ??
+      serverTableData?.tabs?.[0] ??
+      pageData?.tabs?.find((tab) => tab.id === activeTab?.id) ??
+      pageData?.tabs?.[0],
+    [activeTab?.id, pageData?.tabs, serverTableData?.tabs],
   );
   const activeTabIndex = config.tabs?.findIndex((tab) => tab.id === (activeTab?.id ?? "")) ?? 0;
   const legacyTable = useMemo(
@@ -107,6 +125,7 @@ export function ConfiguredPage<Row extends { id: string }>({ config, pageData }:
   const resolvedLegacyStats = useLegacyData ? legacyStats : null;
   const columns = (
     activeDataTab?.columns ??
+    serverTableData?.columns ??
     pageData?.columns ??
     resolvedLegacyTable?.columns ??
     activeTab?.columns ??
@@ -115,6 +134,7 @@ export function ConfiguredPage<Row extends { id: string }>({ config, pageData }:
   ) as TableColumn<Row>[];
   const rows = (
     activeDataTab?.rows ??
+    serverTableData?.rows ??
     pageData?.rows ??
     resolvedLegacyTable?.rows ??
     activeTab?.rows ??
@@ -127,6 +147,13 @@ export function ConfiguredPage<Row extends { id: string }>({ config, pageData }:
   const bulkActions = activeTab?.bulkActions ?? config.bulkActions ?? [];
   const bulkActionLabel = activeTab?.bulkActionLabel ?? config.bulkActionLabel ?? "Bulk Actions";
   const filterLayout = activeTab?.filterLayout ?? config.filterLayout ?? "single";
+  const defaultServerQuery = useMemo(() => getDefaultConfiguredPageQuery(config), [config]);
+  const serverQuery = useMemo(
+    () => (serverMode && searchParams ? parseConfiguredPageQuery(config, searchParams) : defaultServerQuery),
+    [config, defaultServerQuery, searchParams, serverMode],
+  );
+  const serverQueryKey = searchParams?.toString() ?? "";
+  const serverFilterValues = (serverQuery.filters ?? {}) as Record<string, FilterValue>;
   const stats =
     activeDataTab?.stats ??
     pageData?.stats ??
@@ -177,39 +204,96 @@ export function ConfiguredPage<Row extends { id: string }>({ config, pageData }:
     activeTab?.enableSearchFieldSelector ?? config.enableSearchFieldSelector ?? false;
   const searchFields = activeTab?.searchFields ?? config.searchFields ?? derivedSearchFields;
   const sortOptions = activeTab?.sortOptions ?? config.sortOptions ?? derivedSortOptions;
+  const currentFilterValues = serverMode ? serverFilterValues : filterValues;
+  const currentSelectedSearchFields = serverMode ? (serverQuery.searchFields ?? []) : selectedSearchFields;
+  const currentSortState = serverMode
+    ? {
+        columnId: serverQuery.sortBy,
+        direction: serverQuery.sortDir ?? "asc",
+        sortId: serverQuery.sortBy ? `${serverQuery.sortBy}-${serverQuery.sortDir ?? "asc"}` : undefined,
+      }
+    : sortState;
   const hasToolbar =
     filters.some((filter) => filter.type === "search" || filter.type === "select") ||
     sortOptions.length > 0 ||
     bulkActions.length > 0;
 
   useEffect(() => {
+    if (!serverMode) {
+      setServerTableData(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    getConfiguredPageTableData(config, serverQuery).then((data) => {
+      if (!cancelled) {
+        setServerTableData(data as ConfiguredPageData<Row>);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [config, serverMode, serverQuery, serverQueryKey]);
+
+  function replaceServerQuery(nextPartial: Partial<typeof serverQuery>) {
+    if (!pathname) {
+      return;
+    }
+
+    const nextQuery = mergeConfiguredPageQuery(serverQuery, nextPartial);
+    const nextSearchParams = buildConfiguredPageSearchParams(config, nextQuery);
+    const href = nextSearchParams.toString() ? `${pathname}?${nextSearchParams.toString()}` : pathname;
+    router.replace(href, { scroll: false });
+  }
+
+  useEffect(() => {
     if (!enableSearchFieldSelector) {
-      setSelectedSearchFields([]);
+      if (!serverMode) {
+        setSelectedSearchFields([]);
+      }
       return;
     }
 
     const nextSearchFieldIds = searchFields.map((field) => field.id);
+    if (serverMode) {
+      const preserved = (serverQuery.searchFields ?? []).filter((fieldId) => nextSearchFieldIds.includes(fieldId));
+      const resolved = preserved.length > 0 ? preserved : nextSearchFieldIds;
+      if (resolved.join(",") !== (serverQuery.searchFields ?? []).join(",")) {
+        replaceServerQuery({
+          searchFields: resolved,
+          page: 1,
+        });
+      }
+      return;
+    }
+
     setSelectedSearchFields((current) => {
       const preserved = current.filter((fieldId) => nextSearchFieldIds.includes(fieldId));
       return preserved.length > 0 ? preserved : nextSearchFieldIds;
     });
-  }, [enableSearchFieldSelector, searchFields]);
+  }, [enableSearchFieldSelector, searchFields, serverMode, serverQuery.searchFields]);
 
   useEffect(() => {
+    if (serverMode) {
+      return;
+    }
+
     setSortState({
       columnId: activeTab?.defaultSortColumn,
       direction: "asc",
       sortId: activeTab?.defaultSortColumn ? `${activeTab.defaultSortColumn}-asc` : undefined,
     });
-  }, [activeTab?.defaultSortColumn, config.id]);
+  }, [activeTab?.defaultSortColumn, config.id, serverMode]);
 
   useEffect(() => {
     setSelectedRowIds([]);
-  }, [config.id, activeTab?.id, filterValues, rows]);
+  }, [config.id, activeTab?.id, rows]);
 
   const filteredRows = useMemo(
-    () => applyFilters(rows, filters, filterValues, columns, selectedSearchFields),
-    [columns, filterValues, filters, rows, selectedSearchFields],
+    () => (serverMode ? rows : applyFilters(rows, filters, currentFilterValues, columns, currentSelectedSearchFields)),
+    [columns, currentFilterValues, currentSelectedSearchFields, filters, rows, serverMode],
   );
 
   return (
@@ -245,14 +329,37 @@ export function ConfiguredPage<Row extends { id: string }>({ config, pageData }:
           hasToolbar ? (
             <FilterToolbar
               filters={filters}
-              values={filterValues}
+              values={currentFilterValues}
               columns={columns}
               searchFields={enableSearchFieldSelector ? searchFields : []}
-              selectedSearchFields={selectedSearchFields}
+              selectedSearchFields={currentSelectedSearchFields}
               sortOptions={sortOptions}
-              activeSortId={sortState.sortId}
-              onChange={(id, value) => setFilterValues((current) => ({ ...current, [id]: value }))}
-              onSearchFieldsChange={setSelectedSearchFields}
+              activeSortId={currentSortState.sortId}
+              onChange={(id, value) => {
+                if (serverMode) {
+                  replaceServerQuery({
+                    filters: {
+                      [id]: value,
+                    },
+                    query: id === "query" && typeof value === "string" ? value : serverQuery.query,
+                    page: 1,
+                  });
+                  return;
+                }
+
+                setFilterValues((current) => ({ ...current, [id]: value }));
+              }}
+              onSearchFieldsChange={(nextFields) => {
+                if (serverMode) {
+                  replaceServerQuery({
+                    searchFields: nextFields,
+                    page: 1,
+                  });
+                  return;
+                }
+
+                setSelectedSearchFields(nextFields);
+              }}
               bulkActions={bulkActions}
               bulkActionLabel={bulkActionLabel}
               filterLayout={filterLayout}
@@ -263,11 +370,17 @@ export function ConfiguredPage<Row extends { id: string }>({ config, pageData }:
                 notify(message);
               }}
               onSortChange={(columnId, direction, sortId) =>
-                setSortState({
-                  columnId,
-                  direction,
-                  sortId,
-                })
+                serverMode
+                  ? replaceServerQuery({
+                      sortBy: columnId,
+                      sortDir: direction,
+                      page: 1,
+                    })
+                  : setSortState({
+                      columnId,
+                      direction,
+                      sortId,
+                    })
               }
             />
           ) : undefined
@@ -283,14 +396,39 @@ export function ConfiguredPage<Row extends { id: string }>({ config, pageData }:
           emptyMessage={activeTab?.emptyMessage ?? config.emptyMessage}
           onAction={notify}
           onSelectionChange={setSelectedRowIds}
-          sortColumn={sortState.columnId}
-          sortDirection={sortState.direction}
+          sortColumn={currentSortState.columnId}
+          sortDirection={currentSortState.direction}
+          sortingMode={serverMode ? "server" : "client"}
+          paginationMode={serverMode ? "server" : "client"}
+          currentPage={serverMode ? serverTableData?.pagination?.page ?? serverQuery.page ?? 1 : undefined}
+          rowsPerPage={serverMode ? serverTableData?.pagination?.pageSize ?? serverQuery.pageSize ?? config.defaultPageSize ?? 25 : undefined}
+          totalRows={serverMode ? serverTableData?.pagination?.totalRows ?? filteredRows.length : undefined}
+          rowsPerPageOptions={config.rowsPerPageOptions}
+          onRowsPerPageChange={(pageSize) => {
+            if (serverMode) {
+              replaceServerQuery({
+                pageSize,
+                page: 1,
+              });
+            }
+          }}
+          onPageChange={(page) => {
+            if (serverMode) {
+              replaceServerQuery({ page });
+            }
+          }}
           onSortChange={(columnId, direction) =>
-            setSortState({
-              columnId,
-              direction,
-              sortId: `${columnId}-${direction}`,
-            })
+            serverMode
+              ? replaceServerQuery({
+                  sortBy: columnId,
+                  sortDir: direction,
+                  page: 1,
+                })
+              : setSortState({
+                  columnId,
+                  direction,
+                  sortId: `${columnId}-${direction}`,
+                })
           }
         />
       </TableSection>

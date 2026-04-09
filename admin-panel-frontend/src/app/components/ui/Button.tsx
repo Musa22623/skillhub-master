@@ -1,3 +1,5 @@
+"use client";
+
 import type { ButtonHTMLAttributes, PropsWithChildren } from "react";
 import { Icon } from "@/app/components/ui/Icon";
 import type { ActionVariant, IconName } from "@/app/components/types/ui";

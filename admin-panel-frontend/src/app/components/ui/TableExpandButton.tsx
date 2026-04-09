@@ -1,3 +1,5 @@
+"use client";
+
 type TableExpandButtonProps = {
   expanded: boolean;
   onToggle: () => void;

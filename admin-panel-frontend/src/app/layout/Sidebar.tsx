@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Icon } from "@/app/components/ui/Icon";
 import type { NavItem } from "@/app/components/types/ui";
@@ -5,25 +7,21 @@ import type { NavItem } from "@/app/components/types/ui";
 type SidebarProps = {
   mobileOpen: boolean;
   sections: NavItem[];
-  expandedSections: Record<string, boolean>;
   isPathActive: (path?: string) => boolean;
   isSectionActive: (paths: Array<string | undefined>) => boolean;
   resolvePath: (path?: string) => string;
   onToggleMobile: () => void;
   onCloseMobile: () => void;
-  onToggleSection: (sectionId: string) => void;
 };
 
 export function Sidebar({
   mobileOpen,
   sections,
-  expandedSections,
   isPathActive,
   isSectionActive,
   resolvePath,
   onToggleMobile,
   onCloseMobile,
-  onToggleSection,
 }: SidebarProps) {
   return (
     <>
@@ -61,15 +59,13 @@ export function Sidebar({
           {sections.map((section) => (
             <div key={section.id} className="mb-3">
               {section.children ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => onToggleSection(section.id)}
+                <details open={isSectionActive(section.children.map((child) => child.path))}>
+                  <summary
                     className={`mb-2 flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-semibold transition ${
                       isSectionActive(section.children.map((child) => child.path))
                         ? "bg-gradient-to-r from-brand-soft to-[#F2F7FF] text-text-icon"
                         : "text-text-menu hover:bg-[#F5F5F5]"
-                    }`}
+                    } cursor-pointer list-none [&::-webkit-details-marker]:hidden`}
                   >
                     {section.icon ? (
                       <Icon
@@ -82,48 +78,41 @@ export function Sidebar({
                       />
                     ) : null}
                     <span className="flex-1 text-left">{section.label}</span>
-                    <span
-                      className={`transition-transform ${
-                        expandedSections[section.id] ? "rotate-90 text-brand" : "text-text-secondary"
-                      }`}
-                      aria-hidden="true"
-                    >
+                    <span className="text-text-secondary group-open:text-brand" aria-hidden="true">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
                         <polyline points="9 18 15 12 9 6"></polyline>
                       </svg>
                     </span>
-                  </button>
+                  </summary>
 
-                  {expandedSections[section.id] ? (
-                    <div className="ml-5 border-l-[3px] border-surface-line pl-3">
-                      {section.children.map((child, childIndex) => {
-                        const previousGroup = childIndex > 0 ? section.children?.[childIndex - 1]?.group : undefined;
-                        const showGroup = child.group && child.group !== previousGroup;
+                  <div className="ml-5 border-l-[3px] border-surface-line pl-3">
+                    {section.children.map((child, childIndex) => {
+                      const previousGroup = childIndex > 0 ? section.children?.[childIndex - 1]?.group : undefined;
+                      const showGroup = child.group && child.group !== previousGroup;
 
-                        return (
-                          <div key={child.id}>
-                            {showGroup ? (
-                              <div className="px-3 pb-1 pt-3 text-[11px] font-bold uppercase tracking-[0.08em] text-text-secondary">
-                                {child.group}
-                              </div>
-                            ) : null}
-                            <Link
-                              href={resolvePath(child.path)}
-                              onClick={onCloseMobile}
-                              className={`relative mb-1 flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                                isPathActive(child.path)
-                                  ? "bg-brand-soft text-brand before:absolute before:-left-[15px] before:top-0 before:h-full before:w-[3px] before:rounded-r before:bg-brand before:content-['']"
-                                  : "text-text-secondary hover:bg-[#F5F5F5] hover:text-text-icon"
-                              }`}
-                            >
-                              {child.label}
-                            </Link>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : null}
-                </>
+                      return (
+                        <div key={child.id}>
+                          {showGroup ? (
+                            <div className="px-3 pb-1 pt-3 text-[11px] font-bold uppercase tracking-[0.08em] text-text-secondary">
+                              {child.group}
+                            </div>
+                          ) : null}
+                          <Link
+                            href={resolvePath(child.path)}
+                            onClick={onCloseMobile}
+                            className={`relative mb-1 flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+                              isPathActive(child.path)
+                                ? "bg-brand-soft text-brand before:absolute before:-left-[15px] before:top-0 before:h-full before:w-[3px] before:rounded-r before:bg-brand before:content-['']"
+                                : "text-text-secondary hover:bg-[#F5F5F5] hover:text-text-icon"
+                            }`}
+                          >
+                            {child.label}
+                          </Link>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </details>
               ) : (
                 <Link
                   href={resolvePath(section.path)}

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getConfiguredPageData } from "@/app/lib/services/admin-pages.service";
+import { Suspense, useEffect, useState } from "react";
+import { getConfiguredPageData, getConfiguredPageShellData } from "@/app/lib/services/admin-pages.service";
 import type { ConfiguredPageData } from "@/app/lib/types/admin-page";
 import { usePathname, useRouter } from "next/navigation";
 import { AppProviders } from "@/app/providers/AppProviders";
@@ -41,7 +41,9 @@ function AppContent() {
       };
     }
 
-    getConfiguredPageData(activeConfig as never).then((data) => {
+    const loader = activeConfig.dataMode === "server" ? getConfiguredPageShellData : getConfiguredPageData;
+
+    loader(activeConfig as never).then((data) => {
       if (!cancelled) {
         setPageData(data as ConfiguredPageData<{ id: string }>);
       }
@@ -65,7 +67,9 @@ function AppContent() {
 export function NextApp() {
   return (
     <AppProviders>
-      <AppContent />
+      <Suspense fallback={null}>
+        <AppContent />
+      </Suspense>
     </AppProviders>
   );
 }

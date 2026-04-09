@@ -1,4 +1,20 @@
-import type { StatConfig, TableColumn } from "@/app/components/types/ui";
+import type { FilterValue, SortDirection, StatConfig, TableColumn } from "@/app/components/types/ui";
+
+export type ConfiguredPageQueryParams = {
+  query?: string;
+  filters?: Record<string, FilterValue>;
+  sortBy?: string;
+  sortDir?: SortDirection;
+  page?: number;
+  pageSize?: number;
+  searchFields?: string[];
+};
+
+export type ConfiguredPagePagination = {
+  page: number;
+  pageSize: number;
+  totalRows: number;
+};
 
 export type ConfiguredPageTabData<Row extends { id: string }> = {
   id: string;
@@ -14,6 +30,8 @@ export type ConfiguredPageData<Row extends { id: string }> = {
   columns?: TableColumn<Row>[];
   rows?: Row[];
   tabs?: ConfiguredPageTabData<Row>[];
+  query?: ConfiguredPageQueryParams;
+  pagination?: ConfiguredPagePagination;
 };
 
 export type ConfiguredPageApiResponse<Row extends { id: string }> = {

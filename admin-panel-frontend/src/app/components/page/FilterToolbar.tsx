@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "@/app/components/ui/Input";
 import { Icon } from "@/app/components/ui/Icon";

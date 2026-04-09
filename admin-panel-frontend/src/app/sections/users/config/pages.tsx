@@ -113,7 +113,11 @@ export const userPages: PageConfig<AdminRecord>[] = [
     path: "users/user-management",
     title: "User Management",
     section: "User & Access Management",
+    dataMode: "server",
     density: "comfortable",
+    defaultPageSize: 25,
+    rowsPerPageOptions: [10, 25, 50, 100],
+    defaultSortColumn: "updatedAt",
     description: "Manage account state, roles, and member lifecycle across the platform.",
     actions: [
       createAction("invite-user", "Invite User", "Invite modal opened.", "primary", "users"),

@@ -1,3 +1,5 @@
+"use client";
+
 import type { PropsWithChildren, ReactNode } from "react";
 
 type TableDropdownProps = PropsWithChildren<{

@@ -1,94 +1,85 @@
-import { legacyData } from "@/app/features/legacy/legacyData";
 import type {
   AllInstructorsApiResponse,
   ApplicationsApiResponse,
-  LegacyApplicationDto,
-  LegacyContractDto,
-  LegacyInstructorDto,
-  LegacyMemberDto,
-  LegacyUserDto,
-  LegacyUserStatDto,
   TeamContactsApiResponse,
   TeamMembersApiResponse,
   UserManagementApiResponse,
+  UserManagementQueryParams,
+  UserManagementSummaryApiResponse,
 } from "@/app/lib/types/users";
+import { fetchAdminJson } from "@/app/lib/http/admin-client";
+import {
+  fetchMockAllInstructorsPage,
+  fetchMockApplicationsPage,
+  fetchMockTeamContactsPage,
+  fetchMockTeamMembersPage,
+  fetchMockUserManagementPage,
+  fetchMockUserManagementSummary,
+} from "@/app/lib/api/users.mock";
 
-type LegacyUserManagementPage = {
-  datasets?: {
-    statsData?: LegacyUserStatDto[];
-    usersData?: LegacyUserDto[];
-  };
-};
+const adminApiMode = process.env.NEXT_PUBLIC_ADMIN_API_MODE ?? "http";
 
-type LegacyApplicationsPage = {
-  datasets?: {
-    statsData?: LegacyUserStatDto[];
-    applicationsData?: LegacyApplicationDto[];
-  };
-};
+function shouldUseHttpApi() {
+  return adminApiMode === "http";
+}
 
-type LegacyAllInstructorsPage = {
-  datasets?: {
-    statsData?: LegacyUserStatDto[];
-    instructorsData?: LegacyInstructorDto[];
-  };
-};
+export async function fetchUserManagementSummary(): Promise<UserManagementSummaryApiResponse> {
+  if (shouldUseHttpApi()) {
+    return fetchAdminJson<UserManagementSummaryApiResponse>("/api/admin/users/summary");
+  }
 
-type LegacyTeamContactsPage = {
-  datasets?: {
-    statsData?: LegacyUserStatDto[];
-    contractsData?: LegacyContractDto[];
-  };
-};
+  return fetchMockUserManagementSummary();
+}
 
-type LegacyTeamMembersPage = {
-  datasets?: {
-    statsData?: LegacyUserStatDto[];
-    membersData?: LegacyMemberDto[];
-  };
-};
+export async function fetchUserManagementPage({
+  query = "",
+  status = "",
+  role = "",
+  sortBy,
+  sortDir = "asc",
+  page: pageNumber = 1,
+  pageSize = 25,
+  searchFields = [],
+}: UserManagementQueryParams): Promise<UserManagementApiResponse> {
+  if (shouldUseHttpApi()) {
+    return fetchAdminJson<UserManagementApiResponse>("/api/admin/users", {
+      query: {
+        query,
+        status,
+        role,
+        sortBy,
+        sortDir,
+        page: pageNumber,
+        pageSize,
+        searchFields,
+      },
+    });
+  }
 
-export async function fetchUserManagementPage(): Promise<UserManagementApiResponse> {
-  const page = legacyData["user-management"] as unknown as LegacyUserManagementPage | undefined;
-
-  return {
-    stats: page?.datasets?.statsData ?? [],
-    rows: page?.datasets?.usersData ?? [],
-  };
+  return fetchMockUserManagementPage({
+    query,
+    status,
+    role,
+    sortBy,
+    sortDir,
+    page: pageNumber,
+    pageSize,
+    searchFields,
+  });
 }
 
 export async function fetchApplicationsPage(): Promise<ApplicationsApiResponse> {
-  const page = legacyData.applications as unknown as LegacyApplicationsPage | undefined;
-
-  return {
-    stats: page?.datasets?.statsData ?? [],
-    rows: page?.datasets?.applicationsData ?? [],
-  };
+  return fetchMockApplicationsPage();
 }
 
 export async function fetchAllInstructorsPage(): Promise<AllInstructorsApiResponse> {
-  const page = legacyData["all-instructors"] as unknown as LegacyAllInstructorsPage | undefined;
-
-  return {
-    stats: page?.datasets?.statsData ?? [],
-    rows: page?.datasets?.instructorsData ?? [],
-  };
+  return fetchMockAllInstructorsPage();
 }
 
 export async function fetchTeamContactsPage(): Promise<TeamContactsApiResponse> {
-  const page = legacyData["team-contacts"] as unknown as LegacyTeamContactsPage | undefined;
-
-  return {
-    stats: page?.datasets?.statsData ?? [],
-    rows: page?.datasets?.contractsData ?? [],
-  };
+  return fetchMockTeamContactsPage();
 }
 
 export async function fetchTeamMembersPage(): Promise<TeamMembersApiResponse> {
-  const page = legacyData["team-members"] as unknown as LegacyTeamMembersPage | undefined;
-
-  return {
-    stats: page?.datasets?.statsData ?? [],
-    rows: page?.datasets?.membersData ?? [],
-  };
+  return fetchMockTeamMembersPage();
 }
