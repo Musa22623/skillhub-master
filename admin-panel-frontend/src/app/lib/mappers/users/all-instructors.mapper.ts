@@ -1,6 +1,13 @@
 import type { StatConfig } from "@/app/components/types/ui";
 import type { AdminRecord } from "@/app/sections/shared/config/shared";
-import type { AllInstructorsApiResponse, LegacyInstructorDto, SimpleAdminPageData, LegacyUserStatDto } from "@/app/lib/types/users";
+import type {
+  AllInstructorsListApiResponse,
+  AllInstructorsPageData,
+  AllInstructorsSummaryApiResponse,
+  AllInstructorsSummaryData,
+  InstructorListItemDto,
+  UserStatDto,
+} from "@/app/lib/types/users";
 
 function toTitleCase(value: string) {
   return value
@@ -10,7 +17,7 @@ function toTitleCase(value: string) {
     .join(" ");
 }
 
-function mapAllInstructorsStat(stat: LegacyUserStatDto): StatConfig | null {
+function mapAllInstructorsStat(stat: UserStatDto): StatConfig | null {
   switch (stat.id) {
     case "instructors":
       return { id: "inst-total", label: "Approved instructors", value: stat.value, change: stat.trend?.value, tone: "success", icon: "users" };
@@ -40,7 +47,7 @@ function mapInstructorPayoutStatus(status: string) {
   }
 }
 
-function mapAllInstructorsRow(instructor: LegacyInstructorDto): AdminRecord {
+function mapAllInstructorsRow(instructor: InstructorListItemDto): AdminRecord {
   return {
     id: String(instructor.id),
     name: instructor.name,
@@ -52,9 +59,17 @@ function mapAllInstructorsRow(instructor: LegacyInstructorDto): AdminRecord {
   };
 }
 
-export function mapAllInstructorsApiResponse(response: AllInstructorsApiResponse): SimpleAdminPageData {
+export function mapAllInstructorsListResponse(response: AllInstructorsListApiResponse): AllInstructorsPageData {
   return {
     stats: response.stats.map(mapAllInstructorsStat).filter((stat): stat is StatConfig => stat !== null),
     rows: response.rows.map(mapAllInstructorsRow),
+    pagination: response.pagination,
+    query: response.query,
+  };
+}
+
+export function mapAllInstructorsSummaryResponse(response: AllInstructorsSummaryApiResponse): AllInstructorsSummaryData {
+  return {
+    stats: response.stats.map(mapAllInstructorsStat).filter((stat): stat is StatConfig => stat !== null),
   };
 }

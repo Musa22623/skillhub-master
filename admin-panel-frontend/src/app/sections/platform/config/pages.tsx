@@ -265,6 +265,11 @@ export const platformPages: PageConfig<AdminRecord>[] = [
     path: "platform/notifications",
     title: "Notifications",
     section: "Platform",
+    dataMode: "server",
+    density: "comfortable",
+    defaultPageSize: 25,
+    rowsPerPageOptions: [10, 25, 50, 100],
+    defaultSortColumn: "updatedAt",
     description: "Control delivery status, campaign timing, and operational notification health.",
     stats: [
       createStat({ id: "notif-sent", label: "Sent today", value: "18,420", change: "+12%", tone: "success", icon: "bell" }),

@@ -26,6 +26,11 @@ export const systemPages: PageConfig<AdminRecord>[] = [
     path: "system/checklist-instances",
     title: "Checklist Instances",
     section: "System & Operations",
+    dataMode: "server",
+    density: "comfortable",
+    defaultPageSize: 25,
+    rowsPerPageOptions: [10, 25, 50, 100],
+    defaultSortColumn: "updatedAt",
     description: "Track compliance checklist runs for products and profiles.",
     stats: [
       createStat({ id: "check-runs", label: "Runs this week", value: "312", change: "+26", tone: "success", icon: "document" }),
@@ -141,6 +146,11 @@ export const systemPages: PageConfig<AdminRecord>[] = [
     path: "system/marketing-emails",
     title: "Marketing Emails",
     section: "System & Operations",
+    dataMode: "server",
+    density: "comfortable",
+    defaultPageSize: 25,
+    rowsPerPageOptions: [10, 25, 50, 100],
+    defaultSortColumn: "updatedAt",
     description: "Manage lifecycle campaigns, send health, and audience delivery coverage.",
     stats: [
       createStat({ id: "email-campaigns", label: "Active campaigns", value: "22", change: "+3", tone: "success", icon: "mail" }),

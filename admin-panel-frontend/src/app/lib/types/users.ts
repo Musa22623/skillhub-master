@@ -3,7 +3,7 @@ import type { AdminRecord } from "@/app/sections/shared/config/shared";
 import type { ConfiguredPagePagination, ConfiguredPageQueryParams } from "@/app/lib/types/admin-page";
 import type { ListResponse, SummaryResponse } from "@/app/lib/types/api";
 
-export type LegacyUserStatDto = {
+export type UserStatDto = {
   id: string;
   title: string;
   value: string;
@@ -13,7 +13,7 @@ export type LegacyUserStatDto = {
   } | null;
 };
 
-export type LegacyUserDto = {
+export type UserManagementItemDto = {
   id: number;
   name: string;
   internalId: string;
@@ -32,14 +32,14 @@ export type LegacyUserDto = {
   linkedTo?: string[];
 };
 
-export type UserManagementApiResponse = ListResponse<LegacyUserDto> & {
-  stats: readonly LegacyUserStatDto[];
-  rows: readonly LegacyUserDto[];
+export type UserManagementApiResponse = ListResponse<UserManagementItemDto> & {
+  stats: readonly UserStatDto[];
+  rows: readonly UserManagementItemDto[];
   pagination: ConfiguredPagePagination;
   query: ConfiguredPageQueryParams;
 };
 
-export type UserManagementSummaryApiResponse = SummaryResponse<LegacyUserStatDto>;
+export type UserManagementSummaryApiResponse = SummaryResponse<UserStatDto>;
 
 export type UserManagementPageData = {
   stats: StatConfig[];
@@ -63,7 +63,7 @@ export type UserManagementQueryParams = {
   searchFields?: string[];
 };
 
-export type LegacyApplicationDto = {
+export type InstructorApplicationDto = {
   id: number;
   appId: string;
   name: string;
@@ -77,11 +77,30 @@ export type LegacyApplicationDto = {
 };
 
 export type ApplicationsApiResponse = {
-  stats: readonly LegacyUserStatDto[];
-  rows: readonly LegacyApplicationDto[];
+  stats: readonly UserStatDto[];
+  rows: readonly InstructorApplicationDto[];
 };
 
-export type LegacyInstructorDto = {
+export type ApplicationsSummaryApiResponse = SummaryResponse<UserStatDto>;
+
+export type ApplicationsQueryParams = {
+  query?: string;
+  status?: string;
+  sortBy?: string;
+  sortDir?: SortDirection;
+  page?: number;
+  pageSize?: number;
+  searchFields?: string[];
+};
+
+export type ApplicationsListApiResponse = ListResponse<InstructorApplicationDto> & {
+  stats: readonly UserStatDto[];
+  rows: readonly InstructorApplicationDto[];
+  pagination: ConfiguredPagePagination;
+  query: ConfiguredPageQueryParams;
+};
+
+export type InstructorListItemDto = {
   id: number;
   name: string;
   email: string;
@@ -105,11 +124,30 @@ export type LegacyInstructorDto = {
 };
 
 export type AllInstructorsApiResponse = {
-  stats: readonly LegacyUserStatDto[];
-  rows: readonly LegacyInstructorDto[];
+  stats: readonly UserStatDto[];
+  rows: readonly InstructorListItemDto[];
 };
 
-export type LegacyContractDto = {
+export type AllInstructorsSummaryApiResponse = SummaryResponse<UserStatDto>;
+
+export type AllInstructorsQueryParams = {
+  query?: string;
+  status?: string;
+  sortBy?: string;
+  sortDir?: SortDirection;
+  page?: number;
+  pageSize?: number;
+  searchFields?: string[];
+};
+
+export type AllInstructorsListApiResponse = ListResponse<InstructorListItemDto> & {
+  stats: readonly UserStatDto[];
+  rows: readonly InstructorListItemDto[];
+  pagination: ConfiguredPagePagination;
+  query: ConfiguredPageQueryParams;
+};
+
+export type TeamContactDto = {
   id: number;
   contractId: string;
   name: string;
@@ -123,11 +161,30 @@ export type LegacyContractDto = {
 };
 
 export type TeamContactsApiResponse = {
-  stats: readonly LegacyUserStatDto[];
-  rows: readonly LegacyContractDto[];
+  stats: readonly UserStatDto[];
+  rows: readonly TeamContactDto[];
 };
 
-export type LegacyMemberDto = {
+export type TeamContactsSummaryApiResponse = SummaryResponse<UserStatDto>;
+
+export type TeamContactsQueryParams = {
+  query?: string;
+  status?: string;
+  sortBy?: string;
+  sortDir?: SortDirection;
+  page?: number;
+  pageSize?: number;
+  searchFields?: string[];
+};
+
+export type TeamContactsListApiResponse = ListResponse<TeamContactDto> & {
+  stats: readonly UserStatDto[];
+  rows: readonly TeamContactDto[];
+  pagination: ConfiguredPagePagination;
+  query: ConfiguredPageQueryParams;
+};
+
+export type TeamMemberDto = {
   id: number;
   name: string;
   email: string;
@@ -139,11 +196,74 @@ export type LegacyMemberDto = {
 };
 
 export type TeamMembersApiResponse = {
-  stats: readonly LegacyUserStatDto[];
-  rows: readonly LegacyMemberDto[];
+  stats: readonly UserStatDto[];
+  rows: readonly TeamMemberDto[];
+};
+
+export type TeamMembersSummaryApiResponse = SummaryResponse<UserStatDto>;
+
+export type TeamMembersQueryParams = {
+  query?: string;
+  status?: string;
+  sortBy?: string;
+  sortDir?: SortDirection;
+  page?: number;
+  pageSize?: number;
+  searchFields?: string[];
+};
+
+export type TeamMembersListApiResponse = ListResponse<TeamMemberDto> & {
+  stats: readonly UserStatDto[];
+  rows: readonly TeamMemberDto[];
+  pagination: ConfiguredPagePagination;
+  query: ConfiguredPageQueryParams;
 };
 
 export type SimpleAdminPageData = {
   stats: StatConfig[];
   rows: AdminRecord[];
+};
+
+export type AllInstructorsPageData = {
+  stats: StatConfig[];
+  rows: AdminRecord[];
+  pagination: ConfiguredPagePagination;
+  query: ConfiguredPageQueryParams;
+};
+
+export type AllInstructorsSummaryData = {
+  stats: StatConfig[];
+};
+
+export type ApplicationsPageData = {
+  stats: StatConfig[];
+  rows: AdminRecord[];
+  pagination: ConfiguredPagePagination;
+  query: ConfiguredPageQueryParams;
+};
+
+export type ApplicationsSummaryData = {
+  stats: StatConfig[];
+};
+
+export type TeamMembersPageData = {
+  stats: StatConfig[];
+  rows: AdminRecord[];
+  pagination: ConfiguredPagePagination;
+  query: ConfiguredPageQueryParams;
+};
+
+export type TeamMembersSummaryData = {
+  stats: StatConfig[];
+};
+
+export type TeamContactsPageData = {
+  stats: StatConfig[];
+  rows: AdminRecord[];
+  pagination: ConfiguredPagePagination;
+  query: ConfiguredPageQueryParams;
+};
+
+export type TeamContactsSummaryData = {
+  stats: StatConfig[];
 };

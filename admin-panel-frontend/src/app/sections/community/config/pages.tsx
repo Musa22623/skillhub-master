@@ -42,6 +42,11 @@ export const communityPages: PageConfig<AdminRecord>[] = [
     path: "community/reviews",
     title: "Reviews & Ratings",
     section: "Community & Engagement",
+    dataMode: "server",
+    density: "comfortable",
+    defaultPageSize: 25,
+    rowsPerPageOptions: [10, 25, 50, 100],
+    defaultSortColumn: "updatedAt",
     description: "Review learner feedback, rating drift, and follow-up opportunities.",
     stats: [
       createStat({ id: "reviews-average", label: "Average rating", value: "4.7", change: "+0.1", tone: "success", icon: "community" }),
@@ -114,6 +119,11 @@ export const communityPages: PageConfig<AdminRecord>[] = [
     path: "community/schools",
     title: "Schools",
     section: "Community & Engagement",
+    dataMode: "server",
+    density: "comfortable",
+    defaultPageSize: 25,
+    rowsPerPageOptions: [10, 25, 50, 100],
+    defaultSortColumn: "updatedAt",
     description: "Manage school directories, partner visibility, and program status.",
     stats: [
       createStat({ id: "schools-total", label: "Schools", value: "62", change: "+4", tone: "success", icon: "community" }),

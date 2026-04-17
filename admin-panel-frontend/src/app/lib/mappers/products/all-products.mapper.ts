@@ -1,6 +1,13 @@
-import type { AdminRecord } from "@/app/sections/shared/config/shared";
 import type { StatConfig } from "@/app/components/types/ui";
-import type { AllProductsApiResponse, AllProductsPageData, LegacyProductDto } from "@/app/lib/types/products";
+import type { AdminRecord } from "@/app/sections/shared/config/shared";
+import type {
+  AllProductsItemDto,
+  AllProductsListApiResponse,
+  AllProductsPageData,
+  AllProductsSummaryApiResponse,
+  AllProductsSummaryData,
+  ProductStatDto,
+} from "@/app/lib/types/products";
 
 function toTitleCase(value: string) {
   return value
@@ -10,7 +17,7 @@ function toTitleCase(value: string) {
     .join(" ");
 }
 
-function mapAllProductsStat(stat: { id: string; title: string; value: string; trend: { value: string; type: string } | null }): StatConfig | null {
+function mapAllProductsStat(stat: ProductStatDto): StatConfig | null {
   switch (stat.id) {
     case "total":
       return { id: "products-total", label: "Total products", value: stat.value, change: stat.trend?.value, tone: "success", icon: "products" };
@@ -35,7 +42,7 @@ function mapProductStatus(status: string) {
   return toTitleCase(status);
 }
 
-function mapProductRow(product: LegacyProductDto): AdminRecord {
+function mapProductRow(product: AllProductsItemDto): AdminRecord {
   return {
     id: String(product.id),
     name: product.title,
@@ -48,9 +55,17 @@ function mapProductRow(product: LegacyProductDto): AdminRecord {
   };
 }
 
-export function mapAllProductsApiResponse(response: AllProductsApiResponse): AllProductsPageData {
+export function mapAllProductsListResponse(response: AllProductsListApiResponse): AllProductsPageData {
   return {
     stats: response.stats.map(mapAllProductsStat).filter((stat): stat is StatConfig => stat !== null),
     rows: response.rows.map(mapProductRow),
+    pagination: response.pagination,
+    query: response.query,
+  };
+}
+
+export function mapAllProductsSummaryResponse(response: AllProductsSummaryApiResponse): AllProductsSummaryData {
+  return {
+    stats: response.stats.map(mapAllProductsStat).filter((stat): stat is StatConfig => stat !== null),
   };
 }
